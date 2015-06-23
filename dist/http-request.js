@@ -37,15 +37,15 @@ angular.module('http.request', [])
 				that.setAuthHeader(type, value)
 			};
 
-		// Raw request methods without UrlBase
-			service.noUrlBaseNoData = function (method, url, config) {
+		// Raw requests (methods without UrlBase)
+			service.rawWithoutData = function (method, url, config) {
 				return $http(angular.extend({}, config || {}, {
 					method: method,
 					url: url
 				}));
 			};
 
-			service.noUrlBaseWithData =  function (method, url, data, config) {
+			service.rawWithData =  function (method, url, data, config) {
 				return $http(angular.extend({}, config || {}, {
 					method: method,
 					url: url,
@@ -53,7 +53,7 @@ angular.module('http.request', [])
 				}))
 			};
 
-			service.raw = function (config) {
+			service.rawCompletely = function (config) {
 				return $http(config)
 			};
 
