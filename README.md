@@ -13,3 +13,6 @@ This is an attempt to provide a simple interface for Angular's $http service tha
 
 **(3)** Add `'http.request'` to your main module's list of dependencies: 
 `angular.module('myApp', ['http.request'])`
+
+**(4)** Inject `'HttpRequest'` to your controller's list of dependencies and start using it: 
+`.controller('MyController, function(HttpRequest) { HttpRequest.get('someUrl').then(function() {}) });`
