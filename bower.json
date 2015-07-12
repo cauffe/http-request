@@ -1,6 +1,6 @@
 {
   "name": "http-request",
-  "version": "0.1",
+  "version": "0.2",
   "main": "./dist/http-request.js",
   "description": "RESTful HTTP request service for AngularJS applications",
   "repository": {

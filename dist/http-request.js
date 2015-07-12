@@ -1,43 +1,85 @@
+/**
+ * Author: Nate McNeil
+ * natemcneil.com
+ * nhmcneil@gmail.com
+ * version: 0.2
+ * **/
+
 'use strict';
 
 angular.module('http.request', [])
 
 	.provider('HttpRequest', ['$httpProvider', function ($httpProvider) {
-		this.defaults = $httpProvider.defaults;
-		this.interceptors = $httpProvider.interceptors;
+		// General configuration
+		var provider = this;
 
-	// URL configuration
-		var urlBase = '';
-		var urlSuffix = '';
+		// initialize new configurations
+		$httpProvider.defaults.params = {};
 
+		this.configuration = {
+			defaults: $httpProvider.defaults,
+			interceptors: $httpProvider.interceptors,
+			responseInterceptors: $httpProvider.responseInterceptors,
+			urlBase: '',
+			urlSuffix: ''
+		};
+
+
+		// URL configuration and methods
 		function buildUrl(url) {
-			return urlBase + url + urlSuffix
+			return provider.configuration.urlBase + url + provider.configuration.urlSuffix
 		}
 
-	// Provider configuration methods
 		this.setUrlBase = function (url) {
-			urlBase = url
+			provider.configuration.urlBase = url
 		};
 
 		this.setUrlSuffix = function (suffix) {
-			urlSuffix = suffix
+			provider.configuration.urlSuffix = suffix
 		};
 
+
+		// Header configuration and methods
 		this.setAuthHeader = function (type, value) {
-			this.defaults.headers.common.Authorization = type + ' ' + value
+			provider.configuration.defaults.headers.common.Authorization = type + ' ' + value
 		};
 
-	// Service core
+		this.setHeader = function (name, value) {
+			provider.configuration.defaults.headers.common[name] = value
+		};
+
+
+		// Request params configuration and methods
+		this.setDefaultParams = function (name, value) {
+			provider.configuration.defaults.params[name] = value
+		};
+
+		function buildParams(config){
+			var params = angular.copy(provider.configuration.defaults.params);
+			if (config != undefined){
+				if (config.params != undefined && config.params.length > 0) {
+					for (var p in config.params){
+						params[p] = config.params[p];
+					}
+				}
+			}
+			return params
+		}
+
+
+		// Service core
 		this.$get = ['$http', function($http) {
-			var that = this;
 			var service = {};
 
-		// Service configuration methods
-			service.setAuthHeader = function (type, value) {
-				that.setAuthHeader(type, value)
-			};
+			// Service configuration methods
+			service.setUrlBase = provider.setUrlBase;
+			service.setUrlSuffix = provider.setUrlSuffix;
+			service.setAuthHeader = provider.setAuthHeader;
+			service.setHeader = provider.setHeader;
+			service.setDefaultParams = provider.setDefaultParams;
 
-		// Raw requests (methods without UrlBase)
+
+			// Raw requests (methods without UrlBase)
 			service.rawWithoutData = function (method, url, config) {
 				return $http(angular.extend({}, config || {}, {
 					method: method,
@@ -57,13 +99,18 @@ angular.module('http.request', [])
 				return $http(config)
 			};
 
-		// request methods construction
+
+			// request methods construction
 			function createMethods() {
 				angular.forEach(arguments, function(name) {
 					service[name] = function(url, config) {
+
+						var params = buildParams(config);
+
 						return $http(angular.extend({}, config || {}, {
 							method: name,
-							url: buildUrl(url)
+							url: buildUrl(url),
+							params: params
 						}));
 					};
 				});
@@ -72,10 +119,14 @@ angular.module('http.request', [])
 			function createMethodsWithData() {
 				angular.forEach(arguments, function(name) {
 					service[name] = function(url, data, config) {
+
+						var params = buildParams(config);
+
 						return $http(angular.extend({}, config || {}, {
 							method: name,
 							url: buildUrl(url),
-							data: data
+							data: data,
+							params: params
 						}));
 					};
 				});

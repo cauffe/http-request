@@ -8,8 +8,8 @@ This is an attempt to provide a simple interface for Angular's $http service tha
  - clone this repository: `$ git clone git@github.com:Nate-McNeil/http-request.git`
  - or via **[Bower](http://bower.io/)**: by running `$ bower install http-request` from your console
 
-**(2)** Include `http-request.js` in your `index.html`, after including Angular itself:
-`<script src="bower_components/http-request/dist/http-request.js"></script>`
+**(2)** Include `http-request.[min.]js` in your `index.html`, after including Angular itself:
+`<script src="bower_components/http-request/dist/http-request.[min.]js"></script>`
 
 **(3)** Add `'http.request'` to your main module's list of dependencies: 
 `angular.module('myApp', ['http.request'])`
